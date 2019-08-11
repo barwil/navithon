@@ -3,7 +3,8 @@ import pynmea2
 
 DEFAULT_HOST="localhost"
 DEFAULT_PORT=10113
-DEFAULT_INTERVAL=2
+DEFAULT_INTERVAL=2.0
+
 
 class Sounder:
     IP="10.10.100.254"
@@ -18,15 +19,15 @@ class Sounder:
         try:
             self.sock=socket.socket()
             self.sock.settimeout(5)
-            self.sock.connect((IP,PORT))
-            self.sock.send(strFromHex(INIT_MSG))
+            self.sock.connect((self.IP,self.PORT))
+            self.sock.send(strFromHex(self.INIT_MSG))
             self.sock.recv(100)
         except socket.timeout:
             print ("Cannot initialize. Check connection to sounder.")
             self.sock=None
         
     def get_value(self):
-        self.sock.send(strFromHex(REQ_MSG)) #request data
+        self.sock.send(strFromHex(self.REQ_MSG)) #request data
         stream=self.sock.recv(1000)
         #print repr(stream)
         while len(stream)>2 and stream[:2]!='h\x82':
@@ -61,7 +62,7 @@ if __name__=="__main__":
     parser.add_argument("-p", "--port", type=int, help="the port number to send messages to")
     parser.add_argument("-H", "--host", type=str, help="the host interface")
     
-    parser.add_argument("-i", "--interval", type=int, help="interval (in secs) between readings")    
+    parser.add_argument("-i", "--interval", type=int, help="interval (in secs) between readings", default=DEFAULT_INTERVAL)    
 
     parser.add_argument("-v", "--verbose", help="increase output verbosity", action="store_true")
 
